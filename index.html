@@ -1,0 +1,827 @@
+<title>What AI Did to the Entry-Level PM Job</title>
+<style>
+  :root {
+    --ground: #0D0F13;
+    --panel: #161A20;
+    --line: #262C35;
+    --ink: #EDE9E1;
+    --muted: #868D99;
+    --machine: #D98B3F;
+    --human: #5EA9DB;
+    --u: min(1vw, 1.7778vh);
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- stage ---------- */
+
+  #stage {
+    position: fixed;
+    inset: 0;
+    display: grid;
+  }
+
+  .slide {
+    grid-area: 1 / 1;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: calc(9 * var(--u)) calc(10 * var(--u)) calc(12 * var(--u));
+    gap: calc(3.2 * var(--u));
+  }
+
+  .slide.is-active { display: flex; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .slide.is-active > * {
+      animation: rise 420ms cubic-bezier(.2, .7, .3, 1) both;
+    }
+    .slide.is-active > *:nth-child(2) { animation-delay: 70ms; }
+    .slide.is-active > *:nth-child(3) { animation-delay: 130ms; }
+    .slide.is-active > *:nth-child(4) { animation-delay: 180ms; }
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(calc(1.2 * var(--u))); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- type ---------- */
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: calc(1.5 * var(--u));
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .eyebrow.machine { color: var(--machine); }
+  .eyebrow.human { color: var(--human); }
+
+  h1 {
+    font-size: calc(7.6 * var(--u));
+    line-height: .98;
+    letter-spacing: -.028em;
+    font-weight: 700;
+    margin: 0;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-size: calc(5.6 * var(--u));
+    line-height: 1.04;
+    letter-spacing: -.025em;
+    font-weight: 700;
+    margin: 0;
+    max-width: 26ch;
+    text-wrap: balance;
+  }
+
+  h2.tight { font-size: calc(4.6 * var(--u)); max-width: 30ch; }
+
+  .sub {
+    font-size: calc(2.4 * var(--u));
+    line-height: 1.45;
+    color: var(--muted);
+    margin: 0;
+    max-width: 44ch;
+  }
+
+  .sub strong { color: var(--ink); font-weight: 600; }
+
+  .giant {
+    font-size: calc(19 * var(--u));
+    line-height: .84;
+    letter-spacing: -.05em;
+    font-weight: 700;
+    margin: 0;
+    color: var(--machine);
+  }
+
+  .giant.small { font-size: calc(11 * var(--u)); max-width: 30ch; }
+
+  em { font-style: normal; color: var(--human); }
+  .amber { color: var(--machine); }
+
+  /* ---------- list patterns ---------- */
+
+  ul.stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: calc(1.6 * var(--u));
+    max-width: 40ch;
+  }
+
+  ul.stack li {
+    font-size: calc(2.9 * var(--u));
+    line-height: 1.25;
+    display: flex;
+    gap: calc(1.6 * var(--u));
+    align-items: baseline;
+  }
+
+  ul.stack li::before {
+    content: "";
+    flex: none;
+    width: calc(1.1 * var(--u));
+    height: calc(1.1 * var(--u));
+    border-radius: 50%;
+    background: var(--line);
+    transform: translateY(calc(-.35 * var(--u)));
+  }
+
+  ul.stack.human li::before { background: var(--human); }
+  ul.stack.machine li::before { background: var(--machine); }
+
+  ul.stack.dense { max-width: 52ch; gap: calc(1.2 * var(--u)); }
+  ul.stack.dense li { font-size: calc(2.3 * var(--u)); }
+
+  ol.ladder {
+    list-style: none;
+    counter-reset: q;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: calc(1.5 * var(--u));
+    max-width: 46ch;
+  }
+
+  ol.ladder li {
+    counter-increment: q;
+    font-size: calc(2.6 * var(--u));
+    line-height: 1.25;
+    display: flex;
+    gap: calc(1.8 * var(--u));
+    align-items: baseline;
+    color: var(--muted);
+  }
+
+  ol.ladder li::before {
+    content: counter(q);
+    font-family: var(--mono);
+    font-size: calc(1.5 * var(--u));
+    color: var(--line);
+    flex: none;
+    width: calc(2.4 * var(--u));
+  }
+
+  ol.ladder li.key {
+    color: var(--ink);
+  }
+
+  ol.ladder li.key::before { color: var(--human); }
+
+  ol.ladder.wide { max-width: 56ch; }
+  ol.ladder.wide li { font-size: calc(2.4 * var(--u)); }
+
+  /* ---------- two-column compare ---------- */
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: calc(5 * var(--u));
+    max-width: calc(78 * var(--u));
+  }
+
+  .compare > div {
+    display: flex;
+    flex-direction: column;
+    gap: calc(1.5 * var(--u));
+    padding-top: calc(2 * var(--u));
+    border-top: 2px solid var(--line);
+  }
+
+  .compare .label {
+    font-family: var(--mono);
+    font-size: calc(1.4 * var(--u));
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .compare .good { border-top-color: var(--human); }
+  .compare .good .label { color: var(--human); }
+  .compare .bad { border-top-color: var(--machine); }
+  .compare .bad .label { color: var(--machine); }
+
+  .compare p {
+    margin: 0;
+    font-size: calc(2.5 * var(--u));
+    line-height: 1.3;
+  }
+
+  .compare.lean p { font-size: calc(2.2 * var(--u)); }
+
+  /* ---------- the handoff chain ---------- */
+
+  .chain {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: calc(3.4 * var(--u)) calc(4 * var(--u));
+    max-width: calc(80 * var(--u));
+  }
+
+  .chain div {
+    display: flex;
+    flex-direction: column;
+    gap: calc(.9 * var(--u));
+    padding-left: calc(1.8 * var(--u));
+    border-left: 2px solid var(--line);
+  }
+
+  .chain .role {
+    font-family: var(--mono);
+    font-size: calc(1.5 * var(--u));
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--human);
+  }
+
+  .chain .does {
+    font-size: calc(2.1 * var(--u));
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .chain .pm { border-left-color: var(--human); }
+  .chain .pm .does { font-weight: 600; }
+
+  .footnote {
+    font-family: var(--mono);
+    font-size: calc(1.5 * var(--u));
+    line-height: 1.6;
+    letter-spacing: .04em;
+    color: var(--muted);
+    max-width: calc(64 * var(--u));
+    margin: 0;
+    padding-top: calc(1.8 * var(--u));
+    border-top: 1px solid var(--line);
+  }
+
+  /* ---------- section divider ---------- */
+
+  .slide.divider { justify-content: center; }
+
+  .divider h2 {
+    font-size: calc(11 * var(--u));
+    letter-spacing: -.04em;
+  }
+
+  .divider h2.tight { font-size: calc(8 * var(--u)); max-width: 30ch; }
+
+  .divider .rule {
+    width: calc(14 * var(--u));
+    height: 3px;
+    background: var(--machine);
+    border: 0;
+    margin: 0;
+  }
+
+  /* ---------- ask-the-room slide ---------- */
+
+  .slide.ask {
+    background: var(--panel);
+  }
+
+  .ask h2 { color: var(--human); max-width: 30ch; }
+
+
+  /* ---------- visual primitives ---------- */
+
+  .beats { display: flex; flex-direction: column; gap: calc(3.4 * var(--u)); max-width: calc(72 * var(--u)); }
+  .beatrow { display: flex; align-items: center; }
+  .beatrow .tag { font-family: var(--mono); font-size: calc(1.4 * var(--u)); letter-spacing: .18em;
+    text-transform: uppercase; color: var(--muted); width: calc(11 * var(--u)); flex: none; }
+  .beatrow i { display: block; height: calc(4 * var(--u)); width: calc(.6 * var(--u)); background: var(--machine); flex: none; }
+  .beatrow.slow i { margin-right: calc(4.6 * var(--u)); }
+  .beatrow.fast i { margin-right: calc(2.8 * var(--u)); }
+  .beatrow.lock i { background: var(--human); margin-right: calc(3.6 * var(--u)); }
+
+  .layers { display: flex; flex-direction: column; gap: calc(1.1 * var(--u)); max-width: calc(58 * var(--u)); }
+  .layers div { padding: calc(1.7 * var(--u)) calc(2.4 * var(--u)); border: 1px solid var(--line);
+    border-left: 3px solid var(--human); font-size: calc(2.5 * var(--u)); line-height: 1.2; }
+  .layers .gone { border-left-color: var(--machine); color: var(--muted);
+    text-decoration: line-through; text-decoration-color: var(--machine); }
+
+  .shapes { display: grid; grid-template-columns: 1fr 1fr; gap: calc(7 * var(--u)); max-width: calc(76 * var(--u)); }
+  .shapes .cap { font-family: var(--mono); font-size: calc(1.5 * var(--u)); letter-spacing: .18em;
+    text-transform: uppercase; margin: 0 0 calc(1.8 * var(--u)); }
+  .one { height: calc(24 * var(--u)); border: 2px solid var(--human); display: flex; align-items: center;
+    justify-content: center; text-align: center; padding: calc(2 * var(--u)); font-size: calc(2.4 * var(--u)); }
+  .frag { height: calc(24 * var(--u)); display: grid; grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr); gap: calc(1.1 * var(--u)); }
+  .frag span { border: 1px solid var(--machine); opacity: .7; }
+
+  .pile { display: grid; grid-template-columns: 1fr 1fr; gap: calc(1.8 * var(--u)); max-width: calc(70 * var(--u)); }
+  .pile span { border: 1px solid var(--machine); padding: calc(2 * var(--u)) calc(2.2 * var(--u));
+    font-size: calc(2.2 * var(--u)); line-height: 1.2; }
+
+  .noisewall { display: flex; flex-wrap: wrap; gap: calc(1.4 * var(--u)) calc(3 * var(--u));
+    max-width: calc(74 * var(--u)); font-family: var(--mono); font-size: calc(2 * var(--u)); color: var(--muted); }
+  .noisewall span { opacity: .4; }
+  .noisewall span:nth-child(2n) { opacity: .62; }
+  .noisewall span:nth-child(3n) { opacity: .28; }
+  .noisewall span.me { color: var(--human); opacity: 1; }
+
+  .three { display: flex; flex-direction: column; gap: calc(3.4 * var(--u)); max-width: calc(72 * var(--u)); }
+  .three div { display: flex; gap: calc(3.2 * var(--u)); align-items: baseline; }
+  .three b { font-family: var(--mono); font-weight: 400; font-size: calc(4.4 * var(--u));
+    color: var(--line); flex: none; line-height: 1; }
+  .three p { margin: 0; font-size: calc(3.5 * var(--u)); line-height: 1.15; font-weight: 600; }
+
+  @media (max-width: 640px) {
+    .shapes, .pile { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- chrome ---------- */
+
+  #chrome {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(7 * var(--u));
+    display: flex;
+    align-items: center;
+    gap: calc(3 * var(--u));
+    padding: 0 calc(10 * var(--u));
+    font-family: var(--mono);
+    font-size: calc(1.5 * var(--u));
+    color: var(--muted);
+    letter-spacing: .06em;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  #clock { color: var(--ink); }
+  #chrome .seg { color: var(--line); }
+  #count { margin-left: auto; }
+  #topic { text-transform: uppercase; letter-spacing: .18em; }
+
+  #bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--line);
+  }
+
+  #bar i {
+    display: block;
+    height: 100%;
+    background: var(--machine);
+    transition: width 260ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #bar i { transition: none; }
+  }
+
+  /* ---------- presenter notes ---------- */
+
+  #notes {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(7 * var(--u));
+    padding: calc(2 * var(--u)) calc(10 * var(--u));
+    background: #05070A;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: calc(1.6 * var(--u));
+    line-height: 1.5;
+    color: var(--human);
+    display: none;
+    white-space: pre-wrap;
+    max-height: 52vh;
+    overflow-y: auto;
+  }
+
+  body.show-notes #notes { display: block; }
+
+  /* ---------- jump menu ---------- */
+
+  #jump {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 10, .97);
+    padding: calc(6 * var(--u)) calc(10 * var(--u));
+    overflow-y: auto;
+    display: none;
+  }
+
+  body.show-jump #jump { display: block; }
+
+  #jump h3 {
+    font-family: var(--mono);
+    font-size: calc(1.5 * var(--u));
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 calc(3 * var(--u));
+    font-weight: 400;
+  }
+
+  #jump ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    column-gap: calc(8 * var(--u));
+  }
+
+  #jump button {
+    appearance: none;
+    background: none;
+    border: 0;
+    width: 100%;
+    text-align: left;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: calc(1.7 * var(--u));
+    padding: calc(.7 * var(--u)) 0;
+    cursor: pointer;
+    display: flex;
+    gap: calc(2 * var(--u));
+    font-variant-numeric: tabular-nums;
+  }
+
+  #jump button:hover,
+  #jump button:focus-visible {
+    color: var(--ink);
+    outline: none;
+  }
+
+  #jump button .t { color: var(--machine); flex: none; }
+  #jump button.is-current { color: var(--ink); }
+  #jump button.is-current .t { color: var(--human); }
+
+  /* ---------- keyboard hint ---------- */
+
+  #hint {
+    position: fixed;
+    right: calc(10 * var(--u));
+    bottom: calc(9 * var(--u));
+    font-family: var(--mono);
+    font-size: calc(1.4 * var(--u));
+    color: var(--line);
+    text-align: right;
+    line-height: 1.7;
+    letter-spacing: .06em;
+  }
+
+  body.started #hint { display: none; }
+
+  /* small screens: keep it legible rather than slide-accurate */
+  @media (max-width: 640px) {
+    :root { --u: min(2.4vw, 1.7778vh); }
+    .compare, .chain { grid-template-columns: 1fr; }
+    #jump ol { columns: 1; }
+  }
+</style>
+
+<main id="stage">
+
+  <section class="slide" data-t="0:00" data-nav="Open">
+    <p class="eyebrow">NYU Tandon &middot; Guest lecture</p>
+    <h1>What AI did to the entry&#8209;level PM job</h1>
+    <p class="sub">Tanya Kureishi &middot; Product manager, leadership coach, DJ</p>
+  </section>
+
+  <section class="slide" data-t="0:02" data-nav="Scope: your first PM job">
+    <p class="eyebrow">Scope for the hour</p>
+    <h2>Your <em>first</em> PM job.</h2>
+    <p class="sub">The seat that changed most, because it was the most execution&#8209;heavy.</p>
+  </section>
+
+  <section class="slide divider" data-t="0:03" data-nav="DJING">
+    <hr class="rule" />
+    <h2>Let me tell you about DJing</h2>
+  </section>
+
+  <section class="slide" data-t="0:03" data-nav="What beat matching is">
+    <p class="eyebrow">Beat matching</p>
+    <h2>Two songs only blend at the same speed.</h2>
+    <div class="beats">
+      <div class="beatrow slow"><span class="tag">Track A</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="beatrow fast"><span class="tag">Track B</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:06" data-nav="SYNC">
+    <p class="eyebrow machine">Then the gear got computers in it</p>
+    <p class="giant">SYNC</p>
+    <div class="beats">
+      <div class="beatrow lock"><span class="tag"></span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="beatrow lock"><span class="tag"></span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <section class="slide ask" data-t="0:08" data-nav="Your turn: what made them good?">
+    <p class="eyebrow human">Your turn</p>
+    <h2>Been to a set you loved? What made that DJ good?</h2>
+  </section>
+
+  <section class="slide" data-t="0:11" data-nav="The skill moved up">
+    <p class="eyebrow human">Where it went</p>
+    <h2>The skill moved up.</h2>
+    <div class="layers">
+      <div>Knowing what belongs together at all</div>
+      <div>Reading the room</div>
+      <div>Song selection and taste</div>
+      <div class="gone">Beat matching</div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:13" data-nav="Hiring followed">
+    <p class="eyebrow">And entry&#8209;level hiring followed</p>
+    <h2>Open decks screened for <span class="amber">clean blends</span>. Now promoters book <em>whoever moves the crowd</em>.</h2>
+  </section>
+
+  <section class="slide" data-t="0:14" data-nav="The Brooklyn set">
+    <p class="eyebrow">A set I nearly lost</p>
+    <div class="compare">
+      <div class="bad"><span class="label">What I'd practiced for weeks</span><p>Seamless blends. Planned surprises.</p></div>
+      <div class="good"><span class="label">What the room needed</span><p>Pop. Sharp cuts. Nothing rehearsed.</p></div>
+    </div>
+    <p class="footnote">The tell was people talking on the dancefloor.</p>
+  </section>
+
+  <section class="slide" data-t="0:17" data-nav="Noise is the test">
+    <p class="eyebrow human">The skill</p>
+    <h2>Cutting through the noise.</h2>
+    <div class="noisewall">
+      <span>AI is ending entry&#8209;level work</span>
+      <span>AI is creating it</span>
+      <span>PM is dead</span>
+      <span>Learn these twelve tools</span>
+      <span>Juniors are over</span>
+      <span>Agents replace the seat</span>
+      <span>Hiring is back</span>
+      <span>Hiring is frozen</span>
+      <span class="me">Including this hour</span>
+    </div>
+  </section>
+
+  <section class="slide divider" data-t="0:20" data-nav="THE JOB">
+    <hr class="rule" />
+    <h2>So what happened to the entry&#8209;level PM job</h2>
+  </section>
+
+  <section class="slide" data-t="0:20" data-nav="Then and now">
+    <p class="eyebrow">Entry&#8209;level scope</p>
+    <div class="shapes">
+      <div>
+        <p class="cap" style="color: var(--human)">2022</p>
+        <div class="one">One bounded problem,<br />start to finish</div>
+      </div>
+      <div>
+        <p class="cap" style="color: var(--machine)">Now</p>
+        <div class="frag"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:23" data-nav="Product builder">
+    <p class="eyebrow human">My read on where it's going</p>
+    <h2 class="tight">Or the seat goes away, and <em>this</em> shows up.</h2>
+    <p class="sub"><strong>Product builder. Product engineer.</strong> A step above entry level.</p>
+    <div class="chain">
+      <div><span class="role">From PM</span><span class="does">You own the what and the why.</span></div>
+      <div><span class="role">From design</span><span class="does">You own the experience.</span></div>
+      <div><span class="role">From engineering</span><span class="does">You own what's buildable.</span></div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:26" data-nav="Execution vs judgment">
+    <p class="eyebrow">What didn't get commoditized</p>
+    <h2><span class="amber">Execution</span> got commoditized.<br /><em>Judgment</em> didn't. <em>Taste</em> didn't.</h2>
+  </section>
+
+  <section class="slide" data-t="0:28" data-nav="Two junior PMs, same pile">
+    <p class="eyebrow">Two junior PMs, same pile</p>
+    <div class="pile">
+      <span>Support channel overflowing</span>
+      <span>A launch running late</span>
+      <span>An experiment instrumented wrong</span>
+      <span>Data for a slide due tomorrow</span>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:31" data-nav="What the good one did">
+    <p class="eyebrow human">What the good one did with it</p>
+    <ol class="ladder wide">
+      <li>Worked out the real order first</li>
+      <li class="key">Automated the half that didn't need their brain</li>
+      <li class="key">Spent their judgment on the half that did</li>
+      <li>Renegotiated the rest with a credible update</li>
+    </ol>
+  </section>
+
+  <section class="slide" data-t="0:34" data-nav="Coachable">
+    <p class="eyebrow human">Coachability</p>
+    <h2 class="tight">Being coachable is how you build judgment faster.</h2>
+    <p class="sub">Same feedback, both of them: <strong>great with people, keeps missing deadlines.</strong></p>
+    <div class="compare lean">
+      <div class="bad"><span class="label">Took it badly</span><p>Fixed it. Went quiet, disengaged, left.</p></div>
+      <div class="good"><span class="label">Took it well</span><p>Fixed it, then kept asking if they were clearing the bar.</p></div>
+    </div>
+  </section>
+
+  <section class="slide divider" data-t="0:37" data-nav="THE INTERVIEW">
+    <hr class="rule" />
+    <h2>What I do in an entry&#8209;level interview</h2>
+  </section>
+
+  <section class="slide" data-t="0:37" data-nav="Then I go quiet">
+    <p class="eyebrow">Move one</p>
+    <h2>&ldquo;Tell me about yourself.&rdquo;<br />Then I go quiet.</h2>
+  </section>
+
+  <section class="slide" data-t="0:39" data-nav="What it sounds like">
+    <p class="eyebrow">What it actually sounds like</p>
+    <div class="compare lean">
+      <div class="good"><span class="label">Lands</span><p>&ldquo;I'm the person who ends up asking whether we should build this at all. That started when we shipped something nobody used. It's why I want to talk about your onboarding problem.&rdquo;</p></div>
+      <div class="bad"><span class="label">Loses me</span><p>&ldquo;So, I grew up in New Jersey, did my undergrad in CS, interned at two places, the first was mostly data work, then I moved to the platform team, and after that I&hellip;&rdquo;</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:41" data-nav="Everyone overclaims">
+    <p class="eyebrow">Move two</p>
+    <h2>&ldquo;Walk me through this line on your resume.&rdquo;</h2>
+    <ul class="stack">
+      <li>How did you grow it?</li>
+      <li>Was that what you expected?</li>
+      <li>What got in the way?</li>
+      <li>What surprised you?</li>
+    </ul>
+  </section>
+
+  <section class="slide" data-t="0:43" data-nav="The 7% claim">
+    <p class="eyebrow machine">&ldquo;I increased subscription conversion by 7%&rdquo;</p>
+    <ol class="ladder wide">
+      <li>Over what time frame?</li>
+      <li>What changed over that year?</li>
+      <li class="key">What else happened in that window, and how do you know it was you?</li>
+    </ol>
+    <p class="footnote">No A/B test. A team metric off a slide, claimed as their own.</p>
+  </section>
+
+  <section class="slide divider" data-t="0:47" data-nav="THE AI QUESTION">
+    <hr class="rule" />
+    <h2 class="tight">&ldquo;How are you using AI in your personal life?&rdquo;</h2>
+  </section>
+
+  <section class="slide" data-t="0:47" data-nav="Eye roll">
+    <p class="giant small">&ldquo;I use AI for&nbsp;everything.&rdquo;</p>
+    <p class="sub">Eye roll.</p>
+  </section>
+
+  <section class="slide" data-t="0:48" data-nav="The ladder">
+    <p class="eyebrow">So I walk this ladder instead</p>
+    <ol class="ladder">
+      <li>What problem were you having?</li>
+      <li>Why did you reach for AI?</li>
+      <li>What did you actually build?</li>
+      <li>What was your first version?</li>
+      <li class="key">How did you know it was any good?</li>
+      <li class="key">What would you fix with infinite time?</li>
+    </ol>
+  </section>
+
+  <section class="slide" data-t="0:50" data-nav="The assignment">
+    <p class="eyebrow human">What I'd do if I were you</p>
+    <h2 class="tight">Go solve a real annoyance in your real life.</h2>
+    <div class="chain">
+      <div class="pm"><span class="role">My grandfather</span><span class="does">He's in his nineties. Record it before it's gone.</span></div>
+      <div class="pm"><span class="role">My clothes</span><span class="does">Look at the photo once. Read the text forever.</span></div>
+      <div class="pm"><span class="role">My own laptop</span><span class="does">I gave an agent access, so I built the defenses.</span></div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:53" data-nav="If you remember anything">
+    <p class="eyebrow human">If you remember anything from today</p>
+    <div class="three">
+      <div><b>1</b><p>Execution got a sync button. <em>Judgment didn't.</em></p></div>
+      <div><b>2</b><p>Nobody hands you coherence.</p></div>
+      <div><b>3</b><p>Build one real thing. Know what's broken in it.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-t="0:55" data-nav="Close">
+    <h2>Everything I told you today is already going stale.</h2>
+    <p class="sub" style="color: var(--human); font-size: calc(3.4 * var(--u));">I'm somebody's summary too. Go check it yourselves.</p>
+  </section>
+
+</main>
+
+<div id="notes" aria-live="polite"></div>
+
+<div id="chrome">
+  <span id="topic">Entry&#8209;level PM</span>
+  <span class="seg">&middot;</span>
+  <span id="clock">0:00</span>
+  <span class="seg">/</span>
+  <span>1:00</span>
+  <span id="count"></span>
+</div>
+
+<div id="bar"><i></i></div>
+
+<div id="hint">
+  &larr; &rarr; move<br />
+  J jump
+</div>
+
+<nav id="jump" aria-label="Jump to slide">
+  <h3>Run of show</h3>
+  <ol id="jumpList"></ol>
+</nav>
+
+<script>
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var notes = document.getElementById('notes');
+  var clock = document.getElementById('clock');
+  var count = document.getElementById('count');
+  var fill = document.querySelector('#bar i');
+  var jumpList = document.getElementById('jumpList');
+  var i = 0;
+
+  slides.forEach(function (s, n) {
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<span class="t">' + s.dataset.t + '</span><span>' + (s.dataset.nav || '') + '</span>';
+    b.addEventListener('click', function () {
+      go(n);
+      document.body.classList.remove('show-jump');
+    });
+    li.appendChild(b);
+    jumpList.appendChild(li);
+  });
+
+  var jumpButtons = Array.prototype.slice.call(jumpList.querySelectorAll('button'));
+
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('is-active', k === i); });
+    jumpButtons.forEach(function (b, k) { b.classList.toggle('is-current', k === i); });
+    var s = slides[i];
+    notes.textContent = s.dataset.notes || '';
+    clock.textContent = s.dataset.t;
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+    if (i > 0) document.body.classList.add('started');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown' || k === ' ' || k === 'PageDown') {
+      e.preventDefault(); go(i + 1);
+    } else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp') {
+      e.preventDefault(); go(i - 1);
+    } else if (k === 'Home') {
+      e.preventDefault(); go(0);
+    } else if (k === 'End') {
+      e.preventDefault(); go(slides.length - 1);
+    } else if (k === 'n' || k === 'N') {
+      document.body.classList.toggle('show-notes');
+    } else if (k === 'j' || k === 'J') {
+      document.body.classList.toggle('show-jump');
+    } else if (k === 'Escape') {
+      document.body.classList.remove('show-jump');
+    } else if (k === 'f' || k === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+  });
+
+  var stage = document.getElementById('stage');
+  stage.addEventListener('click', function (e) {
+    go(e.clientX < window.innerWidth * 0.25 ? i - 1 : i + 1);
+  });
+
+  go(0);
+</script>
